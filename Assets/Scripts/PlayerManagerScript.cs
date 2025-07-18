@@ -12,22 +12,36 @@ public class PlayerManagerScript : MonoBehaviour
     public ControllableUnit selectedUnit;   // The currently controlled guard
     private List<ControllableUnit> allUnits = new List<ControllableUnit>();  // All guards in the scene
 
-    void Start()
+    public void GameLoopStart()
     {
-        // Find all guards (units with ControllableUnit component)
+        // Find all controllable units in the scene
         ControllableUnit[] units = FindObjectsByType<ControllableUnit>(FindObjectsSortMode.None);
         allUnits.AddRange(units);
 
-        // Pick the first guard as the one we start controlling
-        if (allUnits.Count > 0)
+        // Specifically find the "Prisoner" unit and control it
+        GameObject prisonerObj = GameObject.Find("Prisoner");
+
+        if (prisonerObj != null)
         {
-            selectedUnit = allUnits[0];
+            ControllableUnit prisonerUnit = prisonerObj.GetComponent<ControllableUnit>();
+
+            if (prisonerUnit != null)
+            {
+                selectedUnit = prisonerUnit;
+
+                // Set camera to follow the prisoner
+                CameraScript cameraScript = mainCamera.GetComponent<CameraScript>();
+                cameraScript.SetTarget(selectedUnit.transform);
+            }
+            else
+            {
+                Debug.LogWarning("Prisoner does not have a ControllableUnit component.");
+            }
         }
-
-
-        CameraScript cameraScript = mainCamera.GetComponent<CameraScript>();
-        cameraScript.SetTarget(selectedUnit.transform);
-
+        else
+        {
+            Debug.LogWarning("GameObject named 'Prisoner' not found.");
+        }
     }
 
     // Update runs every frame
