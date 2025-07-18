@@ -13,8 +13,6 @@ public class ControllableUnit : MonoBehaviour
     private int currentPatrolIndex = 0;
     private bool isControlled = false;
 
-    public GameObject policeManPrefab, monkPrefab;
-
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -22,9 +20,6 @@ public class ControllableUnit : MonoBehaviour
 
     void Start()
     {
-        // For now instantiate just one of them as a test
-        Instantiate(policeManPrefab, transform.position + Vector3.right * 2, Quaternion.identity);
-        // Instantiate(monkPrefab); // Add if needed
     }
 
     void Update()

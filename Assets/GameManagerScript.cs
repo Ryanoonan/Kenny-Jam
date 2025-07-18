@@ -25,10 +25,11 @@ public class GameManagerScript : MonoBehaviour
         {
             timer += Time.deltaTime;
 
-            if (timer >= delayBeforeStart && Input.GetKeyDown(KeyCode.Space))
+            if (timer >= delayBeforeStart && Input.GetKeyDown(KeyCode.E))
             {
                 Debug.Log("Game Loop Starting...");
                 gameLoopStarted = true;
+                playerManager.GameLoopStart();
             }
 
             return;

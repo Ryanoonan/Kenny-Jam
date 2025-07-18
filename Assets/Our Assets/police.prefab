@@ -50,7 +50,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 9e8a1a8dfcd2c4692883b6db691c41b5, type: 3}
       propertyPath: m_Name
-      value: character-male-c
+      value: police
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -80,7 +80,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 282911d7665fc484893ded9c1988bac0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 20
+  moveSpeed: 5
+  patrolPoints: []
+  waypointThreshold: 0.2
 --- !u!54 &3720392049763594633
 Rigidbody:
   m_ObjectHideFlags: 0
