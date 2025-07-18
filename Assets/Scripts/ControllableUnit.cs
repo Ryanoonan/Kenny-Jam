@@ -22,7 +22,7 @@ public class ControllableUnit : MonoBehaviour
     {
     }
 
-    void Update()
+    void FixedUpdate()
     {
         // Patrol only if not being controlled
         if (!isControlled)
@@ -64,7 +64,7 @@ public class ControllableUnit : MonoBehaviour
         else
         {
             Vector3 moveDir = direction.normalized;
-            rb.MovePosition(transform.position + moveDir * moveSpeed * Time.deltaTime);
+            rb.MovePosition(transform.position + moveDir * moveSpeed * Time.fixedDeltaTime);
         }
     }
 
