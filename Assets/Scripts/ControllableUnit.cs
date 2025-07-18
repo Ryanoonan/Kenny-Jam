@@ -16,6 +16,7 @@ public class ControllableUnit : MonoBehaviour
     void Start()
     {
         //For now isntantiate police
+        Instantiate(gameObject);
         Instantiate(policeManPrefab);
     }
 
