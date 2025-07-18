@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class GameManagerScript : MonoBehaviour
 {
     public PlayerManagerScript playerManager;
-    public float delayBeforeStart = 5f;
+    public float delayBeforeStart = 1f;
 
     private bool gameLoopStarted = false;
     private float timer = 0f;

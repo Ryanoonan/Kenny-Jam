@@ -93,9 +93,6 @@ public class PlayerManagerScript : MonoBehaviour
                 CameraScript cameraScript = mainCamera.GetComponent<CameraScript>();
                 cameraScript.SetTarget(selectedUnit.transform);
 
-                // Call SetControlledUnit on the space bar game object
-                GameObject spaceBar = GameObject.Find("Space Bar");
-
             }
 
         }
