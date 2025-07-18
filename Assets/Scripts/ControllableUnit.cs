@@ -15,7 +15,8 @@ public class ControllableUnit : MonoBehaviour
     }
     void Start()
     {
-
+        //For now isntantiate police
+        Instantiate(policeManPrefab);
     }
 
     // Update is called once per frame
