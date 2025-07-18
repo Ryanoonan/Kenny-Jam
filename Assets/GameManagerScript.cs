@@ -16,6 +16,14 @@ public class GameManagerScript : MonoBehaviour
         // Optionally collect all units at the start
         ControllableUnit[] units = FindObjectsByType<ControllableUnit>(FindObjectsSortMode.None);
         allUnits.AddRange(units);
+
+        GameObject prisonerObj = GameObject.Find("Prisoner");
+        if (prisonerObj != null)
+        {
+            CameraScript camScript = Camera.main.GetComponent<CameraScript>();
+            camScript.SetTarget(prisonerObj.transform);
+        }
+
     }
 
     void Update()
