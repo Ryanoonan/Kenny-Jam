@@ -1879,7 +1879,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 91424c41693054200981732713f6a3d2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.012
+      value: 0.012000024
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 91424c41693054200981732713f6a3d2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2929,6 +2929,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1360414553}
+  - component: {fileID: 1360414554}
   m_Layer: 0
   m_Name: Gutters
   m_TagString: Untagged
@@ -2960,6 +2961,27 @@ Transform:
   - {fileID: 527947472}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1360414554
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360414552}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.2965479, y: 1, z: 4.1251106}
+  m_Center: {x: -1.6039991, y: 0, z: -1.1160504}
 --- !u!1001 &1500977867
 PrefabInstance:
   m_ObjectHideFlags: 0
