@@ -4,6 +4,9 @@ using System.Collections.Generic;
 public class ControllableUnit : MonoBehaviour
 {
     public float moveSpeed = 5f;
+
+    public Vector3 startPosition;
+
     private Rigidbody rb;
 
     [Header("Patrol Settings")]
@@ -16,6 +19,7 @@ public class ControllableUnit : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        startPosition = transform.position;
     }
 
     void Start()

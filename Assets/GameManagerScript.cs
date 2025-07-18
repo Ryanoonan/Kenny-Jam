@@ -7,7 +7,11 @@ public class GameManagerScript : MonoBehaviour
     public float delayBeforeStart = 1f;
 
     private bool gameLoopStarted = false;
-    private float timer = 0f;
+
+    public float gameDuration = 30f; // Set in inspector
+    public TMPro.TextMeshProUGUI timerText;
+    private float gameTimer = 0f;
+    private float preGameTimer = 0f;
 
     private List<ControllableUnit> allUnits = new List<ControllableUnit>();
 
@@ -31,12 +35,13 @@ public class GameManagerScript : MonoBehaviour
         // Wait until the delay has passed
         if (!gameLoopStarted)
         {
-            timer += Time.deltaTime;
+            preGameTimer += Time.deltaTime;
 
-            if (timer >= delayBeforeStart && Input.GetKeyDown(KeyCode.E))
+            if (preGameTimer >= delayBeforeStart && Input.GetKeyDown(KeyCode.E))
             {
                 Debug.Log("Game Loop Starting...");
                 gameLoopStarted = true;
+                gameTimer = gameDuration;
                 playerManager.GameLoopStart();
             }
 
@@ -45,6 +50,16 @@ public class GameManagerScript : MonoBehaviour
 
         // Handle patrols
         HandleUnitPatrols();
+
+        // Update countdown
+        gameTimer -= Time.deltaTime;
+        UpdateTimerUI();
+
+        if (gameTimer <= 0)
+        {
+            Debug.Log("Time's up! Resetting...");
+            ResetGameLoop();
+        }
     }
 
     void HandleUnitPatrols()
@@ -58,4 +73,41 @@ public class GameManagerScript : MonoBehaviour
             // Unit will automatically patrol in Update() if not controlled
         }
     }
+    void ResetGameLoop()
+    {
+        gameLoopStarted = false;
+        preGameTimer = 0f;
+
+        // Optional: reset controlled unit
+        playerManager.selectedUnit = null;
+
+        // Reset camera to the prisoner
+        GameObject prisonerObj = GameObject.Find("Prisoner");
+        if (prisonerObj != null)
+        {
+            CameraScript camScript = Camera.main.GetComponent<CameraScript>();
+            camScript.SetTarget(prisonerObj.transform);
+        }
+
+        // Disable all patrols and control
+        foreach (var unit in allUnits)
+        {
+            if (unit != null)
+            {
+                unit.SetControlled(false);
+                unit.transform.position = unit.startPosition;
+            }
+        }
+
+        Debug.Log("Game loop reset. Waiting to restart...");
+    }
+
+    void UpdateTimerUI()
+    {
+        if (timerText != null)
+        {
+            timerText.text = Mathf.CeilToInt(gameTimer).ToString();
+        }
+    }
+
 }
