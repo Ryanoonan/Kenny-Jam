@@ -7,6 +7,8 @@ public class ControllableUnit : MonoBehaviour
 
     private Rigidbody rb; // Reference to the Rigidbody component
                           // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    public GameObject policeManPrefab, monkPrefab;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
