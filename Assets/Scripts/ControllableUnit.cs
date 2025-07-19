@@ -180,4 +180,20 @@ public class ControllableUnit : MonoBehaviour
     {
         rb.linearVelocity = velocity;
     }
+
+    /// <summary>
+    /// Called when this unit's field of view detects an InteractableItem
+    /// </summary>
+    /// <param name="interactableObject">The GameObject containing the InteractableItem</param>
+    public void FoundInteractibleObject(InteractableItem interactableItem)
+    {
+        // Add your logic here for when an interactable object is found
+        if (interactableItem.startPosition != interactableItem.transform.position)
+        {
+            target = interactableItem.transform;
+        }
+
+        // Example: You might want to move towards the object, highlight it, etc.
+        // For now, just logging the found object
+    }
 }

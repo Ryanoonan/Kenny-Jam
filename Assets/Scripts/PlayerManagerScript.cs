@@ -265,4 +265,17 @@ public class PlayerManagerScript : MonoBehaviour
             eKey.SetActive(false);
         }
     }
+
+    /// <summary>
+    /// Called when a ControllableUnit is spotted by a Field of View
+    /// </summary>
+    /// <param name="spottedUnit">The unit that was spotted</param>
+    public void unitSpotted(ControllableUnit spottedUnit)
+    {
+        if (spottedUnit == selectedUnit && selectedUnit.currentItem != null)
+        {
+            // If the spotted unit is the currently controlled unit and it has an item, do nothing
+            Debug.Log("You LOST!!");
+        }
+    }
 }
