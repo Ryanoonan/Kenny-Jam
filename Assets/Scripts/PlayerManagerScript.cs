@@ -12,6 +12,11 @@ public class PlayerManagerScript : MonoBehaviour
     public ControllableUnit selectedUnit;   // The currently controlled guard
     private List<ControllableUnit> allUnits = new List<ControllableUnit>();  // All guards in the scene
 
+    private float holdStartTime = 0f;
+    private ControllableUnit pendingSwitchUnit = null;
+    private bool isHoldingSwitch = false;
+    private float maxHoldDuration = 3f;
+
     public void GameLoopStart()
     {
         // Find all controllable units in the scene
@@ -69,65 +74,101 @@ public class PlayerManagerScript : MonoBehaviour
         }
     }
 
-    // Look for a nearby guard and switch to them on key press
     void HandleSwitch()
     {
-        if (selectedUnit == null) return;
-        ControllableUnit nearest = FindNearestSwitchableUnit();
         SpaceScript spaceScript = spaceBar.GetComponent<SpaceScript>();
-        if (nearest != null)
+
+        // If not holding the switch key, check if we are near any switchable unit to enable UI and start hold
+        if (!isHoldingSwitch)
         {
-            spaceBar.SetActive(true);
-            spaceScript.SetNearestUnit(nearest);
+            ControllableUnit nearest = FindNearestSwitchableUnit();
 
-            // Check if the switch key is pressed first
-            if (Input.GetKeyDown(switchKey))
+            if (nearest != null)
             {
-                Debug.Log("Switching guards...");
+                spaceBar.SetActive(true);
+                spaceScript.SetNearestUnit(nearest);
 
-                // Update selected unit
-                selectedUnit = nearest;
-                Debug.Log("Switched to: " + nearest.name);
-
-                // Update camera target
-                CameraScript cameraScript = mainCamera.GetComponent<CameraScript>();
-                cameraScript.SetTarget(selectedUnit.transform);
-
+                // Start holding switch key
+                if (Input.GetKeyDown(switchKey))
+                {
+                    isHoldingSwitch = true;
+                    holdStartTime = Time.time;
+                    pendingSwitchUnit = nearest;
+                    Debug.Log($"Started holding switch key towards {nearest.name}");
+                }
             }
-
+            else
+            {
+                spaceBar.SetActive(false);
+            }
         }
         else
         {
-            spaceBar.SetActive(false);
-        }
-
-
-
-
-
-
-
-        // Finds the closest unit that is NOT the current one and is within range
-        ControllableUnit FindNearestSwitchableUnit()
-        {
-            ControllableUnit nearest = null;
-            float minDistance = Mathf.Infinity;
-
-            foreach (var unit in allUnits)
+            // While holding the key
+            if (Input.GetKey(switchKey))
             {
-                if (unit == selectedUnit) continue;
-
-                float distance = Vector3.Distance(selectedUnit.transform.position, unit.transform.position);
-                if (distance <= switchDistance && distance < minDistance)
+                // Check if max hold duration reached
+                if (Time.time - holdStartTime >= maxHoldDuration)
                 {
-                    minDistance = distance;
-                    nearest = unit;
+                    DoSwitch();
                 }
             }
 
-            return nearest;
+            // On key release, do the switch to the pending unit
+            if (Input.GetKeyUp(switchKey))
+            {
+                DoSwitch();
+            }
+        }
+    }
+
+    void DoSwitch()
+    {
+        if (pendingSwitchUnit != null)
+        {
+            Debug.Log($"Switching guards to {pendingSwitchUnit.name}");
+            selectedUnit = pendingSwitchUnit;
+
+            // Update camera target
+            CameraScript cameraScript = mainCamera.GetComponent<CameraScript>();
+            cameraScript.SetTarget(selectedUnit.transform);
+        }
+        CancelHold();
+    }
+
+    void CancelHold()
+    {
+        isHoldingSwitch = false;
+        pendingSwitchUnit = null;
+        holdStartTime = 0f;
+    }
+
+
+
+
+
+
+
+    // Finds the closest unit that is NOT the current one and is within range
+    ControllableUnit FindNearestSwitchableUnit()
+    {
+        ControllableUnit nearest = null;
+        float minDistance = Mathf.Infinity;
+
+        foreach (var unit in allUnits)
+        {
+            if (unit == selectedUnit) continue;
+
+            float distance = Vector3.Distance(selectedUnit.transform.position, unit.transform.position);
+            if (distance <= switchDistance && distance < minDistance)
+            {
+                minDistance = distance;
+                nearest = unit;
+            }
         }
 
-
+        return nearest;
     }
+
+
 }
