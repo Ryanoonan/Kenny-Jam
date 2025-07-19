@@ -27,13 +27,11 @@ public class DoorScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Trigger entered by: " + other.gameObject.name);
         doorAnimator.SetBool("open", true);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log("Trigger exited by: " + other.gameObject.name);
         doorAnimator.SetBool("open", false);
     }
 

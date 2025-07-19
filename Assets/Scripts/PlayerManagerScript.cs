@@ -49,12 +49,10 @@ public class PlayerManagerScript : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Prisoner does not have a ControllableUnit component.");
             }
         }
         else
         {
-            Debug.LogWarning("GameObject named 'Prisoner' not found.");
         }
         gameStarted = true;
     }
@@ -216,11 +214,9 @@ public class PlayerManagerScript : MonoBehaviour
             // Check if the pickup key is pressed
             if (Input.GetKeyDown(pickUpKey))
             {
-                Debug.Log("Picking up item...");
 
                 // Trigger pickup on selected unit
                 selectedUnit.PickUpItem(nearest);
-                Debug.Log("Picked up: " + nearest.name);
 
                 isHoldingItem = true;  // Update holding status
             }
@@ -264,12 +260,10 @@ public class PlayerManagerScript : MonoBehaviour
         // Check if the drop key is pressed
         if (Input.GetKeyDown(pickUpKey))
         {
-            Debug.Log("Dropping item...");
 
             // Trigger drop on selected unit
             selectedUnit.DropItem();
 
-            Debug.Log("Item dropped");
 
             isHoldingItem = false;  // Update holding status
             eKey.SetActive(false);
