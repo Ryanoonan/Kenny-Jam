@@ -14,6 +14,5 @@ public class test2 : MonoBehaviour
     void Update()
     {
         body.MovePosition(new Vector3(0, 0, 0));
-        Debug.Log("move");
     }
 }

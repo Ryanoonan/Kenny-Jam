@@ -43,7 +43,6 @@ public class ControllableUnit : MonoBehaviour
         speed = (transform.position - lastPosition).magnitude;
         Vector3 positionDiff = transform.position - lastPosition;
         lastPosition = transform.position;
-        Debug.Log(animator.GetBool("isMoving"));
         // Patrol only if not being controlled
         if (!isControlled)
         {

@@ -48,7 +48,6 @@ public class GameManagerScript : MonoBehaviour
 
             if (preGameTimer >= delayBeforeStart && Input.GetKeyDown(KeyCode.E))
             {
-                Debug.Log("Game Loop Starting...");
                 gameLoopStarted = true;
                 gameTimer = gameDuration;
                 playerManager.GameLoopStart();
@@ -66,7 +65,6 @@ public class GameManagerScript : MonoBehaviour
 
         if (gameTimer <= 0)
         {
-            Debug.Log("Time's up! Resetting...");
             ResetGameLoop();
         }
     }
@@ -109,7 +107,6 @@ public class GameManagerScript : MonoBehaviour
             }
         }
 
-        Debug.Log("Game loop reset. Waiting to restart...");
     }
 
     void UpdateTimerUI()
@@ -122,8 +119,6 @@ public class GameManagerScript : MonoBehaviour
 
     public void ItemDropped(InteractableItem item)
     {
-        Debug.Log("Item dropped: " + item);
-        Debug.Log("Prisoner Object: " + prisonerObj);
         if ((item.transform.position - prisonerObj.transform.position).magnitude < requiredDistanceToDropItem)
         {
             numberOfItems++;
@@ -133,7 +128,6 @@ public class GameManagerScript : MonoBehaviour
 
             // Move the item GameObject to the prisoner's position
             item.transform.position = prisonerObj.transform.position;
-            Debug.Log($"Item collected! Total items: {numberOfItems}. Game duration extended to {gameDuration} seconds.");
             ResetGameLoop(); // Reset the game loop to apply the new duration
         }
     }
