@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class ControllableUnit : MonoBehaviour
 {
@@ -16,6 +17,12 @@ public class ControllableUnit : MonoBehaviour
     private int currentPatrolIndex = 0;
     private bool isControlled = false;
 
+    public Animator animator; // Assign this in Inspector
+
+    public float speed = 0;
+
+    Vector3 lastPosition = Vector3.zero;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -28,10 +35,21 @@ public class ControllableUnit : MonoBehaviour
 
     void FixedUpdate()
     {
+        speed = (transform.position - lastPosition).magnitude;
+        lastPosition = transform.position;
+        Debug.Log(animator.GetBool("isMoving"));
         // Patrol only if not being controlled
         if (!isControlled)
         {
             Patrol();
+        }
+        if (speed > 0f)
+        {
+            animator.SetBool("isMoving", true); // Prevents Rigidbody from falling through the ground
+        }
+        else
+        {
+            animator.SetBool("isMoving", false);
         }
     }
 
@@ -44,6 +62,9 @@ public class ControllableUnit : MonoBehaviour
 
         Vector3 inputDir = new Vector3(input.x, 0, input.y);
         Vector3 targetPosition = transform.position + inputDir * moveSpeed * Time.deltaTime;
+
+
+
 
         rb.MovePosition(targetPosition);
     }
