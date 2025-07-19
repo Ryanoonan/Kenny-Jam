@@ -12,8 +12,8 @@ TagManager:
   - DontCollide
   - Water
   - UI
-  - 
-  - 
+  - Walls
+  - BlockView
   - 
   - 
   - 
