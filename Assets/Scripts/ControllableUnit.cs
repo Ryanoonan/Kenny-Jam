@@ -55,8 +55,22 @@ public class ControllableUnit : MonoBehaviour
         // Patrol only if not being controlled
         if (!isControlled)
         {
-            Patrol();
+            if (agent != null)
+            {
+                agent.enabled = true;
+                Patrol();
+            }
+
         }
+        else
+        {
+            if (agent != null)
+            {
+                agent.enabled = false;
+            }
+
+        }
+
         if (speed > 0f)
         {
             animator.SetBool("isMoving", true); // Prevents Rigidbody from falling through the ground
@@ -85,9 +99,6 @@ public class ControllableUnit : MonoBehaviour
 
         Vector3 inputDir = new Vector3(input.x, 0, input.y);
         Vector3 targetPosition = transform.position + inputDir * moveSpeed * Time.deltaTime;
-
-
-
 
         rb.MovePosition(targetPosition);
     }
