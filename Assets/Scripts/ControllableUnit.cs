@@ -14,6 +14,8 @@ public class ControllableUnit : MonoBehaviour
 
     public Transform target; // The current target for the unit to move towards if not being controlled
 
+    private FieldOfView fieldOfView;
+
     private Rigidbody rb;
 
     [Header("Patrol Settings")]
@@ -42,6 +44,7 @@ public class ControllableUnit : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        fieldOfView = GetComponent<FieldOfView>();
         if (patrolPoints.Count > 0)
         {
             target = patrolPoints[0];
@@ -60,6 +63,10 @@ public class ControllableUnit : MonoBehaviour
                 agent.enabled = true;
                 Patrol();
             }
+            if (fieldOfView != null)
+            {
+                fieldOfView.isActive = true; // Enable FOV if it exists
+            }
 
         }
         else
@@ -67,6 +74,10 @@ public class ControllableUnit : MonoBehaviour
             if (agent != null)
             {
                 agent.enabled = false;
+            }
+            if (fieldOfView != null)
+            {
+                fieldOfView.isActive = false; // Enable FOV if it exists
             }
 
         }
