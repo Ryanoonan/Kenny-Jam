@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
+
 
 public class GameManagerScript : MonoBehaviour
 {
@@ -14,6 +16,8 @@ public class GameManagerScript : MonoBehaviour
     private bool gameLoopStarted = false;
 
     public GameObject prisonerObj;
+
+    public GameObject winTextUI;
 
     public float baseGameDuration = 10f;      // in seconds
 
@@ -144,6 +148,11 @@ public class GameManagerScript : MonoBehaviour
         playerManager.selectedUnit.currentItem = null;
         if ((item.transform.position - prisonerObj.transform.position).magnitude < requiredDistanceToDropItem)
         {
+            if (item.CompareTag("Battery"))
+            {
+                WinLevel();
+                return;
+            }
             numberOfItems++;
             gameDuration = baseGameDuration + (timePerItem * numberOfItems);
             // Remove the InteractableItem component from the item
@@ -158,6 +167,30 @@ public class GameManagerScript : MonoBehaviour
             ResetGameLoop(); // Reset the game loop to apply the new duration
         }
 
+
+    }
+
+    public void WinLevel()
+    {
+        Debug.Log("Player won the level!");
+
+        // Show the win text
+        if (winTextUI != null)
+            winTextUI.SetActive(true);
+
+        // Optionally stop player input or movement
+        playerManager.enabled = false;
+
+        // Return to menu after delay
+        StartCoroutine(ReturnToMenuAfterDelay(3f)); // 3 seconds
+    }
+
+    private IEnumerator ReturnToMenuAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Load main menu scene (replace "MainMenu" with your scene name)
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
     }
 
 }

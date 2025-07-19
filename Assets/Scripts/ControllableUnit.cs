@@ -135,10 +135,19 @@ public class ControllableUnit : MonoBehaviour
         item.transform.SetParent(transform);
         item.transform.localPosition = new Vector3(0, 1f, 0); // Adjust the Y value as needed
         currentItem = item; // Store the picked-up item
+
+        if (item.CompareTag("Battery"))
+        {
+            moveSpeed *= 0.5f; // Reduce speed (adjust factor as needed)
+        }
     }
 
     public void DropItem()
     {
+        if (currentItem != null && currentItem.CompareTag("Battery"))
+        {
+            moveSpeed *= 2f; // Reset speed (inverse of multiplier used above)
+        }
         currentItem.transform.SetParent(null);
         currentItem.transform.position = transform.position; // Drop above the unit
         gameManagerScript.ItemDropped(currentItem); // Notify the game manager
