@@ -138,4 +138,9 @@ public class ControllableUnit : MonoBehaviour
         currentItem = null; // Clear the reference to the dropped item
 
     }
+
+    public void SetVelocity(Vector3 velocity)
+    {
+        rb.linearVelocity = velocity;
+    }
 }

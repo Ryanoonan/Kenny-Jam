@@ -6,6 +6,8 @@ public class GameManagerScript : MonoBehaviour
     public PlayerManagerScript playerManager;
     public float delayBeforeStart = 1f;
 
+    public float requiredDistanceToDropItem = 4f; // Distance to drop an item
+
     private bool gameLoopStarted = false;
 
     public GameObject prisonerObj;
@@ -122,7 +124,7 @@ public class GameManagerScript : MonoBehaviour
     {
         Debug.Log("Item dropped: " + item);
         Debug.Log("Prisoner Object: " + prisonerObj);
-        if ((item.transform.position - prisonerObj.transform.position).magnitude < 1f)
+        if ((item.transform.position - prisonerObj.transform.position).magnitude < requiredDistanceToDropItem)
         {
             numberOfItems++;
             gameDuration = baseGameDuration + (timePerItem * numberOfItems);

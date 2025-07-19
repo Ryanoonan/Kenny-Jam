@@ -83,6 +83,10 @@ public class PlayerManagerScript : MonoBehaviour
         {
             selectedUnit.Move(new Vector2(h, v));
         }
+        else
+        {
+            selectedUnit.SetVelocity(Vector3.zero); // Stop movement if no input
+        }
     }
 
     // Look for a nearby guard and switch to them on key press
