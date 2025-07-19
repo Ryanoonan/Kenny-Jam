@@ -6,6 +6,8 @@ public class ControllableUnit : MonoBehaviour
 {
     public float moveSpeed = 5f;
 
+    public float rotationSpeed = 15f; // Speed at which the unit rotates
+
     public Vector3 startPosition;
 
     private Rigidbody rb;
@@ -36,6 +38,7 @@ public class ControllableUnit : MonoBehaviour
     void FixedUpdate()
     {
         speed = (transform.position - lastPosition).magnitude;
+        Vector3 positionDiff = transform.position - lastPosition;
         lastPosition = transform.position;
         Debug.Log(animator.GetBool("isMoving"));
         // Patrol only if not being controlled
@@ -51,6 +54,15 @@ public class ControllableUnit : MonoBehaviour
         {
             animator.SetBool("isMoving", false);
         }
+        if (positionDiff.magnitude > 0.01f)
+        {
+            Vector3 direction = positionDiff.normalized;
+            Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+            rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.deltaTime));
+        }
+
+
+
     }
 
     public void Move(Vector2 input)
