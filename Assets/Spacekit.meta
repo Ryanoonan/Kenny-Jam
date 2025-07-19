@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/Scenes/SampleScene.meta
-guid: f66733283f57f47b981d75cb3b257a01
-========
-guid: 13e9e8d6efb3db66485d3a0540817491
->>>>>>>> 117d060 (generator):Assets/Spacekit.meta
+guid: 738829d557e3f4c37b2b23f5c76c6562
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
