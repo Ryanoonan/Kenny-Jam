@@ -690,7 +690,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -2938,6 +2938,14 @@ PrefabInstance:
     - target: {fileID: 2202224827772894716, guid: e70cd4a2582b8467b85e0457c86029bb, type: 3}
       propertyPath: m_Name
       value: CellGuard
+      objectReference: {fileID: 0}
+    - target: {fileID: 3720392049763594633, guid: e70cd4a2582b8467b85e0457c86029bb, type: 3}
+      propertyPath: m_Constraints
+      value: 116
+      objectReference: {fileID: 0}
+    - target: {fileID: 3720392049763594633, guid: e70cd4a2582b8467b85e0457c86029bb, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
