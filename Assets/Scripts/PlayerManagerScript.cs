@@ -12,6 +12,10 @@ public class PlayerManagerScript : MonoBehaviour
 
     public GameObject eKey;                 // Assign this in Inspector
 
+    public GameManagerScript gameManager;
+
+    public int secondsCostToSwitch;
+
     public KeyCode pickUpKey = KeyCode.E; // Key to press to pick up items
 
 
@@ -153,7 +157,7 @@ public class PlayerManagerScript : MonoBehaviour
             if (selectedUnit != null)
             {
                 selectedUnit.SetControlled(false);
-                selectedUnit.ForceStop(); // <-- new method you'll add
+                selectedUnit.ForceStop();
             }
 
             selectedUnit = pendingSwitchUnit;
@@ -162,6 +166,12 @@ public class PlayerManagerScript : MonoBehaviour
             // Update camera target
             CameraScript cameraScript = mainCamera.GetComponent<CameraScript>();
             cameraScript.SetTarget(selectedUnit.transform);
+
+            // 🔻 REDUCE TIME ON SWITCH
+            if (gameManager != null)
+            {
+                gameManager.ReduceTimeOnSwitch(secondsCostToSwitch); // Subtract 3 seconds
+            }
         }
 
         CancelHold();

@@ -7,6 +7,9 @@ using System.Collections;
 public class GameManagerScript : MonoBehaviour
 {
     public PlayerManagerScript playerManager;
+
+    public UnityEngine.UI.Image timerFillImage;
+
     public float delayBeforeStart = 1f;
 
     public List<InteractableItem> cachedItems = new List<InteractableItem>();
@@ -134,14 +137,20 @@ public class GameManagerScript : MonoBehaviour
 
 
     }
-
     void UpdateTimerUI()
     {
         if (timerText != null)
         {
             timerText.text = Mathf.CeilToInt(gameTimer).ToString();
         }
+
+        if (timerFillImage != null)
+        {
+            float fillAmount = Mathf.Clamp01(gameTimer / gameDuration);
+            timerFillImage.fillAmount = fillAmount;
+        }
     }
+
 
     public void ItemDropped(InteractableItem item)
     {
@@ -168,6 +177,18 @@ public class GameManagerScript : MonoBehaviour
         }
 
 
+    }
+
+    public void ReduceTimeOnSwitch(float seconds)
+    {
+        if (!gameLoopStarted) return;
+
+        gameTimer -= seconds;
+
+        // Clamp timer to 0
+        gameTimer = Mathf.Max(0, gameTimer);
+
+        UpdateTimerUI();
     }
 
     public void WinLevel()
