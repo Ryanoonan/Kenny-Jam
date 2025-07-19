@@ -231,8 +231,8 @@ MonoBehaviour:
   requiredDistanceToDropItem: 4
   prisonerObj: {fileID: 1448714361}
   winTextUI: {fileID: 0}
-  baseGameDuration: 10
-  timePerItem: 10
+  baseGameDuration: 15
+  timePerItem: 25
   timerText: {fileID: 0}
 --- !u!4 &34146023
 Transform:
@@ -5298,6 +5298,7 @@ MonoBehaviour:
   switchKey: 32
   eKey: {fileID: 104424741}
   gameManager: {fileID: 34146022}
+  secondsCostToSwitch: 5
   pickUpKey: 101
   selectedUnit: {fileID: 0}
   gameStarted: 0
