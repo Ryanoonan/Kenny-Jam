@@ -23,7 +23,7 @@ public class FieldOfView : MonoBehaviour
     private LayerMask obstructionMask = ~0;
 
     [Header("Appearance")]
-    [Tooltip("Assign a transparent material here in the Inspector.")]
+    [Tooltip("Assign a transparent material here in the Inspector. If left empty, a default transparent material will be created at runtime.")]
     [SerializeField]
     private Material fovMaterial;
 
@@ -34,19 +34,18 @@ public class FieldOfView : MonoBehaviour
     private Mesh viewMesh;
     private Vector3[] vertices;
     private int[] triangles;
-    private bool[] rayHits;
     private MeshRenderer meshRenderer;
-    private MaterialPropertyBlock propBlock;
-    private static readonly RaycastHit[] raycastHits = new RaycastHit[1];
 
     void Awake()
     {
         meshRenderer = GetComponent<MeshRenderer>();
-        // If no material assigned in Inspector, warn
+
+        // Assign or create transparent material
         if (fovMaterial == null)
-            Debug.LogWarning("FieldOfView: fovMaterial is not set. Assign one in the Inspector.");
-        else
-            meshRenderer.material = fovMaterial;
+        {
+            fovMaterial = SetupTransparentMaterial();
+        }
+        meshRenderer.material = fovMaterial;
 
         // Create and configure mesh
         viewMesh = new Mesh { name = "FOV Mesh" };
@@ -56,8 +55,6 @@ public class FieldOfView : MonoBehaviour
         // Pre-allocate arrays
         vertices = new Vector3[rayCount + 2];
         triangles = new int[rayCount * 3];
-        rayHits = new bool[rayCount + 1];
-        propBlock = new MaterialPropertyBlock();
     }
 
     void LateUpdate()
@@ -73,30 +70,28 @@ public class FieldOfView : MonoBehaviour
         Vector3 origin = transform.position + Vector3.up * viewPointHeight;
 
         vertices[0] = Vector3.up * viewPointHeight;
+        int triIndex = 0;
 
-        // Gather sample points
         for (int i = 0; i <= rayCount; i++)
         {
             float currentAngle = -viewAngle / 2f + angleStep * i;
-            Vector3 dir = Quaternion.Euler(0, currentAngle, 0) * Vector3.forward;
-            Vector3 worldPoint = origin + transform.TransformDirection(dir) * viewRadius;
+            Vector3 localDir = Quaternion.Euler(0, currentAngle, 0) * Vector3.forward;
+            Vector3 worldDir = transform.TransformDirection(localDir);
+            Vector3 worldPoint = origin + worldDir * viewRadius;
 
-            bool hit = Physics.RaycastNonAlloc(origin, transform.TransformDirection(dir), raycastHits, viewRadius, obstructionMask) > 0;
-            if (hit) worldPoint = raycastHits[0].point;
+            // Obstruction check
+            if (Physics.Raycast(origin, worldDir, out RaycastHit hit, viewRadius, obstructionMask))
+            {
+                worldPoint = hit.point;
+            }
 
             vertices[i + 1] = transform.InverseTransformPoint(worldPoint);
-            rayHits[i] = hit;
-        }
 
-        // Build triangles, skipping across hit/no-hit transitions
-        int ti = 0;
-        for (int i = 0; i < rayCount; i++)
-        {
-            if (rayHits[i] == rayHits[i + 1])
+            if (i < rayCount)
             {
-                triangles[ti++] = 0;
-                triangles[ti++] = i + 1;
-                triangles[ti++] = i + 2;
+                triangles[triIndex++] = 0;
+                triangles[triIndex++] = i + 1;
+                triangles[triIndex++] = i + 2;
             }
         }
 
@@ -105,13 +100,40 @@ public class FieldOfView : MonoBehaviour
         viewMesh.triangles = triangles;
         viewMesh.RecalculateNormals();
 
-        // Update material color (if your shader uses _Color or _BaseColor)
-        propBlock.SetColor("_Color", fovMaterial.color);
-        meshRenderer.SetPropertyBlock(propBlock);
+        // Update material color if changed
+        fovMaterial.color = fovMaterial.color;
+    }
+
+    private Material SetupTransparentMaterial()
+    {
+        Shader urpLit = Shader.Find("Universal Render Pipeline/Lit");
+        Material mat;
+
+        if (urpLit != null)
+        {
+            mat = new Material(urpLit)
+            {
+                renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent
+            };
+            mat.SetFloat("_Surface", 1f);
+            mat.SetFloat("_Blend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            mat.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        }
+        else
+        {
+            Shader std = Shader.Find("Standard");
+            mat = new Material(std)
+            {
+                renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent
+            };
+            mat.SetFloat("_Mode", 3f);
+            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            mat.SetInt("_ZWrite", 0);
+            mat.EnableKeyword("_ALPHABLEND_ON");
+        }
+
+        mat.SetOverrideTag("RenderType", "Transparent");
+        return mat;
     }
 }
-
-/*
-File: FOVMaterialFactory.cs
-This file is no longer needed—delete it from your project.
-*/
