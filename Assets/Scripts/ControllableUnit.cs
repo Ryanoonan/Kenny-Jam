@@ -8,6 +8,7 @@ public class ControllableUnit : MonoBehaviour
 
     public float rotationSpeed = 15f; // Speed at which the unit rotates
 
+    public GameManagerScript gameManagerScript; // Reference to the GameManagerScript
     public Vector3 startPosition;
 
     private Rigidbody rb;
@@ -133,6 +134,8 @@ public class ControllableUnit : MonoBehaviour
     {
         currentItem.transform.SetParent(null);
         currentItem.transform.position = transform.position; // Drop above the unit
+        gameManagerScript.ItemDropped(currentItem); // Notify the game manager
         currentItem = null; // Clear the reference to the dropped item
+
     }
 }

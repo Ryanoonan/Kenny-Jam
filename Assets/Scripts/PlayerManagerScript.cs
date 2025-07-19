@@ -205,6 +205,7 @@ public class PlayerManagerScript : MonoBehaviour
 
             // Trigger drop on selected unit
             selectedUnit.DropItem();
+
             Debug.Log("Item dropped");
 
             isHoldingItem = false;  // Update holding status

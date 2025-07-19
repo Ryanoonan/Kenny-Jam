@@ -8,27 +8,34 @@ public class GameManagerScript : MonoBehaviour
 
     private bool gameLoopStarted = false;
 
-    public float gameDuration = 30f; // Set in inspector
+    public GameObject prisonerObj;
+
+    public float baseGameDuration = 10f;      // in seconds
+
+    private float gameDuration; // Total game duration, adjusted for items
+    public float timePerItem = 10f;
     public TMPro.TextMeshProUGUI timerText;
     private float gameTimer = 0f;
     private float preGameTimer = 0f;
+
+    private int numberOfItems = 0; // Number of items to collect, can be set in the Inspector
 
     private List<ControllableUnit> allUnits = new List<ControllableUnit>();
 
     void Start()
     {
+        gameDuration = baseGameDuration;
         // Optionally collect all units at the start
         ControllableUnit[] units = FindObjectsByType<ControllableUnit>(FindObjectsSortMode.None);
         allUnits.AddRange(units);
 
-        GameObject prisonerObj = GameObject.Find("Prisoner");
-        if (prisonerObj != null)
-        {
-            CameraScript camScript = Camera.main.GetComponent<CameraScript>();
-            camScript.SetTarget(prisonerObj.transform);
-        }
+        CameraScript camScript = Camera.main.GetComponent<CameraScript>();
+        camScript.SetTarget(prisonerObj.transform);
 
     }
+
+
+
 
     void Update()
     {
@@ -75,6 +82,7 @@ public class GameManagerScript : MonoBehaviour
     }
     void ResetGameLoop()
     {
+        gameDuration = baseGameDuration + (timePerItem * numberOfItems);
         gameLoopStarted = false;
         preGameTimer = 0f;
 
@@ -107,6 +115,24 @@ public class GameManagerScript : MonoBehaviour
         if (timerText != null)
         {
             timerText.text = Mathf.CeilToInt(gameTimer).ToString();
+        }
+    }
+
+    public void ItemDropped(InteractableItem item)
+    {
+        Debug.Log("Item dropped: " + item);
+        Debug.Log("Prisoner Object: " + prisonerObj);
+        if ((item.transform.position - prisonerObj.transform.position).magnitude < 1f)
+        {
+            numberOfItems++;
+            gameDuration = baseGameDuration + (timePerItem * numberOfItems);
+            // Remove the InteractableItem component from the item
+            Destroy(item.GetComponent<InteractableItem>());
+
+            // Move the item GameObject to the prisoner's position
+            item.transform.position = prisonerObj.transform.position;
+            Debug.Log($"Item collected! Total items: {numberOfItems}. Game duration extended to {gameDuration} seconds.");
+            ResetGameLoop(); // Reset the game loop to apply the new duration
         }
     }
 
