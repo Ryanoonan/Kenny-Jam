@@ -9,6 +9,10 @@ public class PlayerManagerScript : MonoBehaviour
     public float switchDistance = 2f;        // How close you need to be to switch guards
     public KeyCode switchKey = KeyCode.Space;    // Key to press to switch guards
 
+    public GameObject eKey;                 // Assign this in Inspector
+
+    public KeyCode pickUpKey = KeyCode.E; // Key to press to pick up items
+
     public ControllableUnit selectedUnit;   // The currently controlled guard
     private List<ControllableUnit> allUnits = new List<ControllableUnit>();  // All guards in the scene
 
@@ -48,6 +52,7 @@ public class PlayerManagerScript : MonoBehaviour
     void Update()
     {
         HandleSwitch();
+        HandlePickUp();
     }
 
     void FixedUpdate()
@@ -101,12 +106,6 @@ public class PlayerManagerScript : MonoBehaviour
             spaceBar.SetActive(false);
         }
 
-
-
-
-
-
-
         // Finds the closest unit that is NOT the current one and is within range
         ControllableUnit FindNearestSwitchableUnit()
         {
@@ -127,7 +126,54 @@ public class PlayerManagerScript : MonoBehaviour
 
             return nearest;
         }
+    }
 
+    // Look for a nearby interactable item and pick it up on key press
+    void HandlePickUp()
+    {
+        if (selectedUnit == null) return;
+        InteractableItem nearest = FindNearestInteractableItem();
+        EKeyScript eKeyScript = eKey.GetComponent<EKeyScript>();
+        if (nearest != null)
+        {
+            eKeyScript.SetNearestItem(nearest);
+            eKey.SetActive(true);
+            // Note: You may want to modify SpaceScript to handle InteractableItem as well
 
+            // Check if the switch key is pressed first
+            if (Input.GetKeyDown(pickUpKey))
+            {
+                Debug.Log("Picking up item...");
+
+                // Trigger pickup on selected unit
+                selectedUnit.PickUpItem(nearest);
+                Debug.Log("Picked up: " + nearest.name);
+            }
+        }
+        else
+        {
+            eKey.SetActive(false);
+        }
+
+        // Finds the closest InteractableItem that is within range
+        InteractableItem FindNearestInteractableItem()
+        {
+            InteractableItem nearest = null;
+            float minDistance = Mathf.Infinity;
+
+            InteractableItem[] items = FindObjectsByType<InteractableItem>(FindObjectsSortMode.None);
+
+            foreach (var item in items)
+            {
+                float distance = Vector3.Distance(selectedUnit.transform.position, item.transform.position);
+                if (distance <= switchDistance && distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearest = item;
+                }
+            }
+
+            return nearest;
+        }
     }
 }

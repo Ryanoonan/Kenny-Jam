@@ -118,4 +118,10 @@ public class ControllableUnit : MonoBehaviour
             Gizmos.DrawSphere(from, 0.2f);
         }
     }
+
+    public void PickUpItem(InteractableItem item)
+    {
+        item.transform.SetParent(transform);
+        item.transform.localPosition = new Vector3(0, 1f, 0); // Adjust the Y value as needed
+    }
 }
