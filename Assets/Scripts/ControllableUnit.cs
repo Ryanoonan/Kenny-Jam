@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEngine.AI;
 
 public class ControllableUnit : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class ControllableUnit : MonoBehaviour
 
     public GameManagerScript gameManagerScript; // Reference to the GameManagerScript
     public Vector3 startPosition;
+
+    public Transform target; // The current target for the unit to move towards if not being controlled
 
     private Rigidbody rb;
 
@@ -27,6 +30,7 @@ public class ControllableUnit : MonoBehaviour
     Vector3 lastPosition = Vector3.zero;
 
     public InteractableItem currentItem; // The item currently held by the unit
+    NavMeshAgent agent;
 
     void Awake()
     {
@@ -34,10 +38,15 @@ public class ControllableUnit : MonoBehaviour
         startPosition = transform.position;
     }
 
+
     void Start()
     {
+        agent = GetComponent<NavMeshAgent>();
+        if (patrolPoints.Count > 0)
+        {
+            target = patrolPoints[0];
+        }
     }
-
     void FixedUpdate()
     {
         speed = (transform.position - lastPosition).magnitude;
@@ -91,20 +100,13 @@ public class ControllableUnit : MonoBehaviour
     public void Patrol()
     {
         if (patrolPoints == null || patrolPoints.Count == 0) return;
-
-        Transform target = patrolPoints[currentPatrolIndex];
-        Vector3 direction = (target.position - transform.position);
-        direction.y = 0; // Keep movement horizontal only
-
-        if (direction.magnitude < waypointThreshold)
+        Debug.Log("Patrolling to point: " + currentPatrolIndex);
+        if (Vector3.Distance(transform.position, target.position) < waypointThreshold)
         {
-            currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Count;
+            currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Count; // Loop through patrol points
+            target = patrolPoints[currentPatrolIndex];
         }
-        else
-        {
-            Vector3 moveDir = direction.normalized;
-            rb.MovePosition(transform.position + moveDir * moveSpeed * Time.fixedDeltaTime);
-        }
+        agent.SetDestination(target.position);
     }
 
     void OnDrawGizmosSelected()
