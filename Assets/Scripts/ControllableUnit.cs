@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using UnityEngine.AI;
+using System.Linq;
 
 public class ControllableUnit : MonoBehaviour
 {
@@ -12,7 +13,14 @@ public class ControllableUnit : MonoBehaviour
     public GameManagerScript gameManagerScript; // Reference to the GameManagerScript
     public Vector3 startPosition;
 
-    public Transform target; // The current target for the unit to move towards if not being controlled
+    public enum ActionType
+    {
+        None,
+        PickUp,
+        Drop,
+    }
+
+    public List<Tuple<GameObject, ActionType>> targets = new List<Tuple<GameObject, ActionType>>();
 
     private FieldOfView fieldOfView;
 
@@ -47,7 +55,7 @@ public class ControllableUnit : MonoBehaviour
         fieldOfView = GetComponent<FieldOfView>();
         if (patrolPoints.Count > 0)
         {
-            target = patrolPoints[0];
+            targets.Add(Tuple.Create(patrolPoints[0].gameObject, ActionType.None));
         }
     }
     void FixedUpdate()
@@ -121,14 +129,82 @@ public class ControllableUnit : MonoBehaviour
 
     public void Patrol()
     {
-        if (patrolPoints == null || patrolPoints.Count == 0) return;
-        Debug.Log("Patrolling to point: " + currentPatrolIndex);
-        if (Vector3.Distance(transform.position, target.position) < waypointThreshold)
+        if (patrolPoints == null || patrolPoints.Count == 0 || targets.Count == 0) return;
+
+        // Get the first target from the dictionary
+        var firstTarget = GetFirstTarget();
+        if (firstTarget.Item1 == null) return;
+
+        GameObject currentTargetObj = firstTarget.Item1;
+        ActionType currentAction = firstTarget.Item2;
+
+
+        if (Vector3.Distance(transform.position, currentTargetObj.transform.position) < waypointThreshold)
         {
-            currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Count; // Loop through patrol points
-            target = patrolPoints[currentPatrolIndex];
+            // Perform the action based on the ActionType
+            PerformAction(currentTargetObj, currentAction);
+
+            // Remove the reached target
+            targets.RemoveAt(0);
+            if (currentAction == ActionType.PickUp)
+            {
+                Debug.Log("Picked up item: " + currentTargetObj.name);
+            }
+
+            // Check if this was a patrol point and add the next one
+            Transform currentTransform = currentTargetObj.transform;
+            for (int i = 0; i < patrolPoints.Count; i++)
+            {
+                if (patrolPoints[i] == currentTransform)
+                {
+                    int nextPatrolIndex = (i + 1) % patrolPoints.Count;
+                    targets.Add(Tuple.Create(patrolPoints[nextPatrolIndex].gameObject, ActionType.None));
+                    break;
+                }
+            }
         }
-        agent.SetDestination(target.position);
+
+        // Move towards the first target in the dictionary if we still have targets
+        var nextTarget = GetFirstTarget();
+        if (nextTarget.Item1 != null)
+        {
+            agent.SetDestination(nextTarget.Item1.transform.position);
+        }
+    }
+
+    private Tuple<GameObject, ActionType> GetFirstTarget()
+    {
+        foreach (var target in targets)
+        {
+            return target; // Return the first item in the dictionary
+        }
+        return new Tuple<GameObject, ActionType>(null, ActionType.None);
+    }
+
+    private void PerformAction(GameObject targetObj, ActionType action)
+    {
+        switch (action)
+        {
+            case ActionType.None:
+                // Just reaching a waypoint, no special action needed
+                break;
+            case ActionType.PickUp:
+                // Try to pick up the interactable item
+                InteractableItem item = targetObj.GetComponent<InteractableItem>();
+                if (item != null && currentItem == null)
+                {
+                    PickUpItem(item);
+                }
+                break;
+            case ActionType.Drop:
+                // Drop the current item at this location
+                if (currentItem != null)
+                {
+                    DropItem();
+                }
+                Destroy(targetObj); // Remove the temporary GameObject
+                break;
+        }
     }
 
     void OnDrawGizmosSelected()
@@ -173,6 +249,7 @@ public class ControllableUnit : MonoBehaviour
         currentItem.transform.SetParent(null);
         currentItem.transform.position = transform.position; // Drop above the unit
         gameManagerScript.ItemDropped(currentItem); // Notify the game manager
+        currentItem = null; // Clear the current item reference
 
     }
 
@@ -186,13 +263,23 @@ public class ControllableUnit : MonoBehaviour
     /// </summary>
     /// <param name="interactableObject">The GameObject containing the InteractableItem</param>
     public void FoundInteractibleObject(InteractableItem interactableItem)
+
     {
         // Add your logic here for when an interactable object is found
-        if (interactableItem.startPosition != interactableItem.transform.position)
+        if ((interactableItem.startPosition - interactableItem.transform.position).magnitude > 1f && !targets.Exists(t => t.Item1.name == $"StartPosition_{interactableItem.name}"))
         {
-            target = interactableItem.transform;
-        }
+            // If the item has moved from its start position, we can consider it as a target
+            Debug.Log("Found interactable item: " + interactableItem.name);
+            // Create a temporary transform for the start position and add as Drop action
+            GameObject startPosObj = new GameObject("StartPosition_" + interactableItem.name);
+            startPosObj.transform.position = interactableItem.startPosition;
+            // Add current position as PickUp action
+            targets.Insert(0, Tuple.Create(interactableItem.gameObject, ActionType.PickUp));
+            targets.Insert(1, Tuple.Create(startPosObj, ActionType.Drop));
 
+
+
+        }
         // Example: You might want to move towards the object, highlight it, etc.
         // For now, just logging the found object
     }

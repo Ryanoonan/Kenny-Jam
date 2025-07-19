@@ -284,8 +284,8 @@ public class PlayerManagerScript : MonoBehaviour
     {
         if (spottedUnit == selectedUnit && selectedUnit.currentItem != null)
         {
-            // If the spotted unit is the currently controlled unit and it has an item, do nothing
-            Debug.Log("You LOST!!");
+            Debug.Log("You lose!");
         }
     }
+
 }

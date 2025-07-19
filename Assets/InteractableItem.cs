@@ -7,11 +7,11 @@ public class InteractableItem : MonoBehaviour
 
     void Awake()
     {
-        startPosition = transform.position;
+
     }
     void Start()
     {
-
+        startPosition = transform.position;
     }
 
     // Update is called once per frame

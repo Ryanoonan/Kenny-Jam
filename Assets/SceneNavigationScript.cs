@@ -10,10 +10,6 @@ public class SceneNavigationScript : MonoBehaviour
         {
             SceneManager.LoadScene(sceneName);
         }
-        else
-        {
-            Debug.LogWarning("Scene name is empty or null.");
-        }
     }
 
     // Reload the current scene

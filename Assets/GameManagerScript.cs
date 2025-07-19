@@ -122,12 +122,10 @@ public class GameManagerScript : MonoBehaviour
                 unit.transform.position = unit.startPosition;
             }
         }
-        Debug.Log("Cached items: " + cachedItems + "Length: " + cachedItems.Count);
         // Reset all interactable items to their original positions
         InteractableItem[] items = FindObjectsByType<InteractableItem>(FindObjectsSortMode.None);
         foreach (InteractableItem item in items)
         {
-            Debug.Log("Found item!!" + item.name);
             if (item != null && !cachedItems.Contains(item))
             {
                 item.transform.position = item.startPosition;
@@ -166,9 +164,7 @@ public class GameManagerScript : MonoBehaviour
             gameDuration = baseGameDuration + (timePerItem * numberOfItems);
             // Remove the InteractableItem component from the item
             Destroy(item.GetComponent<InteractableItem>());
-            Debug.Log("Updateing cached items: " + item.gameObject.name);
             cachedItems.Add(item);
-            Debug.Log("caehd items: Length: " + cachedItems.Count);
 
             // Move the item GameObject to the prisoner's position
             item.transform.position = prisonerObj.transform.position;
@@ -193,7 +189,6 @@ public class GameManagerScript : MonoBehaviour
 
     public void WinLevel()
     {
-        Debug.Log("Player won the level!");
 
         // Show the win text
         if (winTextUI != null)
