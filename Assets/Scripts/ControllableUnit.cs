@@ -122,6 +122,12 @@ public class ControllableUnit : MonoBehaviour
         }
     }
 
+    public void ForceStop()
+    {
+        rb.linearVelocity = Vector3.zero;
+    }
+
+
     public void PickUpItem(InteractableItem item)
     {
 
