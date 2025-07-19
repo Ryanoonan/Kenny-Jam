@@ -56,11 +56,14 @@ public class PlayerManagerScript : MonoBehaviour
         {
             Debug.LogWarning("GameObject named 'Prisoner' not found.");
         }
+        gameStarted = true;
     }
 
     // Update runs every frame
     void Update()
     {
+
+        if (!gameStarted) return;
         HandleSwitch();
 
         if (isHoldingItem)
@@ -75,7 +78,8 @@ public class PlayerManagerScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        HandleMovement();   // Handle WASD/Arrow input
+        if (!gameStarted) return;
+        HandleMovement();
     }
 
     // Move the selected guard using input
@@ -96,12 +100,17 @@ public class PlayerManagerScript : MonoBehaviour
         }
     }
 
-
     void HandleSwitch()
     {
+        if (!gameStarted || selectedUnit == null)
+        {
+            spaceBar.SetActive(false);
+            return;
+        }
+
+        // Only run this if selectedUnit is not null
         SpaceScript spaceScript = spaceBar.GetComponent<SpaceScript>();
 
-        // If not holding the switch key, check if we are near any switchable unit to enable UI and start hold
         if (!isHoldingSwitch)
         {
             ControllableUnit nearest = FindNearestSwitchableUnit();
@@ -111,13 +120,11 @@ public class PlayerManagerScript : MonoBehaviour
                 spaceBar.SetActive(true);
                 spaceScript.SetNearestUnit(nearest);
 
-                // Start holding switch key
                 if (Input.GetKeyDown(switchKey))
                 {
                     isHoldingSwitch = true;
                     holdStartTime = Time.time;
                     pendingSwitchUnit = nearest;
-                    Debug.Log($"Started holding switch key towards {nearest.name}");
                 }
             }
             else
@@ -127,23 +134,19 @@ public class PlayerManagerScript : MonoBehaviour
         }
         else
         {
-            // While holding the key
-            if (Input.GetKey(switchKey))
+            // Same as before: check hold duration or key release
+            if (Input.GetKey(switchKey) && Time.time - holdStartTime >= maxHoldDuration)
             {
-                // Check if max hold duration reached
-                if (Time.time - holdStartTime >= maxHoldDuration)
-                {
-                    DoSwitch();
-                }
+                DoSwitch();
             }
 
-            // On key release, do the switch to the pending unit
             if (Input.GetKeyUp(switchKey))
             {
                 DoSwitch();
             }
         }
     }
+
 
     void DoSwitch()
     {
@@ -177,6 +180,9 @@ public class PlayerManagerScript : MonoBehaviour
     // Finds the closest unit that is NOT the current one and is within range
     ControllableUnit FindNearestSwitchableUnit()
     {
+
+        if (selectedUnit == null) return null;
+
         ControllableUnit nearest = null;
         float minDistance = Mathf.Infinity;
 
