@@ -894,7 +894,7 @@ MonoBehaviour:
   obstructionMask:
     serializedVersion: 2
     m_Bits: 128
-  meshColor: {r: 1, g: 0, b: 0, a: 0.3882353}
+  fovMaterial: {fileID: 2100000, guid: 7f0d64606f13f48bb9b2c1533a47b16e, type: 2}
   isActive: 1
 --- !u!23 &309995620
 MeshRenderer:
@@ -4039,7 +4039,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 7f0d64606f13f48bb9b2c1533a47b16e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4083,12 +4083,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewAngle: 90
   viewRadius: 5
-  rayCount: 50
+  rayCount: 100
   viewPointHeight: 0.5
   obstructionMask:
     serializedVersion: 2
     m_Bits: 128
-  meshColor: {r: 1, g: 0, b: 0, a: 0.3882353}
+  fovMaterial: {fileID: 2100000, guid: 7f0d64606f13f48bb9b2c1533a47b16e, type: 2}
   isActive: 1
 --- !u!195 &1453346791
 NavMeshAgent:
@@ -4848,6 +4848,10 @@ PrefabInstance:
     - target: {fileID: 2202224827772894716, guid: e70cd4a2582b8467b85e0457c86029bb, type: 3}
       propertyPath: m_Name
       value: CellGuard (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2202224827772894716, guid: e70cd4a2582b8467b85e0457c86029bb, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2369733422306461877, guid: e70cd4a2582b8467b85e0457c86029bb, type: 3}
       propertyPath: animator
