@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEngine.UIElements;
 
 public class PlayerManagerScript : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class PlayerManagerScript : MonoBehaviour
     public GameObject eKey;                 // Assign this in Inspector
 
     public KeyCode pickUpKey = KeyCode.E; // Key to press to pick up items
+
+    private bool isHoldingItem = false;  // Track if selected unit is holding an item
 
     public ControllableUnit selectedUnit;   // The currently controlled guard
     private List<ControllableUnit> allUnits = new List<ControllableUnit>();  // All guards in the scene
@@ -52,7 +55,15 @@ public class PlayerManagerScript : MonoBehaviour
     void Update()
     {
         HandleSwitch();
-        HandlePickUp();
+
+        if (isHoldingItem)
+        {
+            HandleDrop();
+        }
+        else
+        {
+            HandlePickUp();
+        }
     }
 
     void FixedUpdate()
@@ -138,9 +149,8 @@ public class PlayerManagerScript : MonoBehaviour
         {
             eKeyScript.SetNearestItem(nearest);
             eKey.SetActive(true);
-            // Note: You may want to modify SpaceScript to handle InteractableItem as well
 
-            // Check if the switch key is pressed first
+            // Check if the pickup key is pressed
             if (Input.GetKeyDown(pickUpKey))
             {
                 Debug.Log("Picking up item...");
@@ -148,6 +158,8 @@ public class PlayerManagerScript : MonoBehaviour
                 // Trigger pickup on selected unit
                 selectedUnit.PickUpItem(nearest);
                 Debug.Log("Picked up: " + nearest.name);
+
+                isHoldingItem = true;  // Update holding status
             }
         }
         else
@@ -174,6 +186,29 @@ public class PlayerManagerScript : MonoBehaviour
             }
 
             return nearest;
+        }
+    }
+
+    // Handle dropping the currently held item
+    void HandleDrop()
+    {
+        if (selectedUnit == null) return;
+
+        EKeyScript eKeyScript = eKey.GetComponent<EKeyScript>();
+        eKey.SetActive(true);
+        // Note: You may want to modify EKeyScript to show "Drop" instead of item name
+
+        // Check if the drop key is pressed
+        if (Input.GetKeyDown(pickUpKey))
+        {
+            Debug.Log("Dropping item...");
+
+            // Trigger drop on selected unit
+            selectedUnit.DropItem();
+            Debug.Log("Item dropped");
+
+            isHoldingItem = false;  // Update holding status
+            eKey.SetActive(false);
         }
     }
 }

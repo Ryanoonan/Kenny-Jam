@@ -25,6 +25,8 @@ public class ControllableUnit : MonoBehaviour
 
     Vector3 lastPosition = Vector3.zero;
 
+    private InteractableItem currentItem; // The item currently held by the unit
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -121,7 +123,16 @@ public class ControllableUnit : MonoBehaviour
 
     public void PickUpItem(InteractableItem item)
     {
+
         item.transform.SetParent(transform);
         item.transform.localPosition = new Vector3(0, 1f, 0); // Adjust the Y value as needed
+        currentItem = item; // Store the picked-up item
+    }
+
+    public void DropItem()
+    {
+        currentItem.transform.SetParent(null);
+        currentItem.transform.position = transform.position; // Drop above the unit
+        currentItem = null; // Clear the reference to the dropped item
     }
 }
