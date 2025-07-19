@@ -1,29 +1,24 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System;
 
 public class ControllableUnit : MonoBehaviour
 {
     public float moveSpeed = 5f;
-
-    public float rotationSpeed = 15f; // Speed at which the unit rotates
-
+    public float rotationSpeed = 15f;
     public Vector3 startPosition;
 
     private Rigidbody rb;
 
     [Header("Patrol Settings")]
-    public List<Transform> patrolPoints;        // Assigned in Inspector
+    public List<Transform> patrolPoints;
     public float waypointThreshold = 0.2f;
-
     private int currentPatrolIndex = 0;
     private bool isControlled = false;
 
-    public Animator animator; // Assign this in Inspector
+    public Animator animator;
+    private Vector3 lastPosition = Vector3.zero;
 
-    public float speed = 0;
-
-    Vector3 lastPosition = Vector3.zero;
+    private Vector3 inputDirection = Vector3.zero;
 
     void Awake()
     {
@@ -31,77 +26,101 @@ public class ControllableUnit : MonoBehaviour
         startPosition = transform.position;
     }
 
-    void Start()
-    {
-    }
-
     void FixedUpdate()
     {
-        speed = (transform.position - lastPosition).magnitude;
-        Vector3 positionDiff = transform.position - lastPosition;
-        lastPosition = transform.position;
-        Debug.Log(animator.GetBool("isMoving"));
-        // Patrol only if not being controlled
-        if (!isControlled)
+        if (isControlled)
         {
-            Patrol();
+            if (inputDirection.sqrMagnitude > 0.01f)
+            {
+                Vector3 attemptedMove = inputDirection * moveSpeed;
+                Vector3 velocityToApply = attemptedMove;
+
+                if (rb.SweepTest(inputDirection.normalized, out RaycastHit hit, moveSpeed * Time.fixedDeltaTime + 0.05f))
+                {
+                    // Try to slide along the surface
+                    Vector3 slideDirection = Vector3.ProjectOnPlane(attemptedMove, hit.normal);
+
+                    // Prevent getting stuck on flat walls by checking if projected move is big enough
+                    if (slideDirection.sqrMagnitude > 0.01f)
+                    {
+                        velocityToApply = slideDirection;
+                    }
+                    else
+                    {
+                        velocityToApply = Vector3.zero; // fully blocked
+                    }
+                }
+
+                rb.linearVelocity = velocityToApply;
+            }
+            else
+            {
+                rb.linearVelocity = Vector3.zero;
+            }
         }
-        if (speed > 0f)
-        {
-            animator.SetBool("isMoving", true); // Prevents Rigidbody from falling through the ground
-        }
+
         else
         {
-            animator.SetBool("isMoving", false);
-        }
-        if (positionDiff.magnitude > 0.01f)
-        {
-            Vector3 direction = positionDiff.normalized;
-            Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
-            rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.deltaTime));
+            // Patrol movement
+            Patrol();
         }
 
+        HandleRotation();
 
+        // Animation handling
+        float speed = rb.linearVelocity.magnitude;
+        animator.SetBool("isMoving", speed > 0.05f);
 
+        inputDirection = Vector3.zero;
     }
 
     public void Move(Vector2 input)
     {
         if (input.magnitude > 1f)
-        {
             input.Normalize();
-        }
 
-        Vector3 inputDir = new Vector3(input.x, 0, input.y);
-        Vector3 targetPosition = transform.position + inputDir * moveSpeed * Time.deltaTime;
-
-
-
-
-        rb.MovePosition(targetPosition);
+        inputDirection = new Vector3(input.x, 0, input.y);
     }
 
     public void SetControlled(bool controlled)
     {
         isControlled = controlled;
+
+        if (!controlled)
+        {
+            inputDirection = Vector3.zero; // clear input when not controlled
+        }
     }
 
     public void Patrol()
     {
-        if (patrolPoints == null || patrolPoints.Count == 0) return;
+        if (patrolPoints == null || patrolPoints.Count == 0)
+            return;
 
         Transform target = patrolPoints[currentPatrolIndex];
         Vector3 direction = (target.position - transform.position);
-        direction.y = 0; // Keep movement horizontal only
+        direction.y = 0;
 
         if (direction.magnitude < waypointThreshold)
         {
             currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Count;
+            rb.linearVelocity = Vector3.zero;
         }
         else
         {
             Vector3 moveDir = direction.normalized;
-            rb.MovePosition(transform.position + moveDir * moveSpeed * Time.fixedDeltaTime);
+            rb.linearVelocity = moveDir * moveSpeed;
+        }
+    }
+
+    private void HandleRotation()
+    {
+        Vector3 linearVelocity = rb.linearVelocity;
+
+        if (linearVelocity.sqrMagnitude > 0.01f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(linearVelocity.normalized, Vector3.up);
+            rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime));
         }
     }
 
