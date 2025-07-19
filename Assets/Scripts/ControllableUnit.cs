@@ -26,7 +26,7 @@ public class ControllableUnit : MonoBehaviour
 
     Vector3 lastPosition = Vector3.zero;
 
-    private InteractableItem currentItem; // The item currently held by the unit
+    public InteractableItem currentItem; // The item currently held by the unit
 
     void Awake()
     {
@@ -140,7 +140,6 @@ public class ControllableUnit : MonoBehaviour
         currentItem.transform.SetParent(null);
         currentItem.transform.position = transform.position; // Drop above the unit
         gameManagerScript.ItemDropped(currentItem); // Notify the game manager
-        currentItem = null; // Clear the reference to the dropped item
 
     }
 

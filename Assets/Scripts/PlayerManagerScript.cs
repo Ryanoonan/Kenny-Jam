@@ -14,7 +14,6 @@ public class PlayerManagerScript : MonoBehaviour
 
     public KeyCode pickUpKey = KeyCode.E; // Key to press to pick up items
 
-    private bool isHoldingItem = false;  // Track if selected unit is holding an item
 
     public ControllableUnit selectedUnit;   // The currently controlled guard
     private List<ControllableUnit> allUnits = new List<ControllableUnit>();  // All guards in the scene
@@ -61,10 +60,10 @@ public class PlayerManagerScript : MonoBehaviour
     void Update()
     {
 
-        if (!gameStarted) return;
+        if (!gameStarted || selectedUnit == null) return;
         HandleSwitch();
 
-        if (isHoldingItem)
+        if (selectedUnit.currentItem != null)
         {
             HandleDrop();
         }
@@ -217,8 +216,6 @@ public class PlayerManagerScript : MonoBehaviour
 
                 // Trigger pickup on selected unit
                 selectedUnit.PickUpItem(nearest);
-
-                isHoldingItem = true;  // Update holding status
             }
         }
         else
@@ -265,7 +262,6 @@ public class PlayerManagerScript : MonoBehaviour
             selectedUnit.DropItem();
 
 
-            isHoldingItem = false;  // Update holding status
             eKey.SetActive(false);
         }
     }

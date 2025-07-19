@@ -737,6 +737,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9adc022db42e446f8824492ba85802e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1124,6 +1125,7 @@ MonoBehaviour:
   eKey: {fileID: 2018438875}
   pickUpKey: 101
   selectedUnit: {fileID: 0}
+  gameStarted: 0
 --- !u!4 &441813147
 Transform:
   m_ObjectHideFlags: 0
@@ -2990,7 +2992,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1568395597701097286, guid: e70cd4a2582b8467b85e0457c86029bb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.17
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1568395597701097286, guid: e70cd4a2582b8467b85e0457c86029bb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3283,7 +3285,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 14dd05997795142b793956df1233b39a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.2
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 14dd05997795142b793956df1233b39a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3647,9 +3649,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerManager: {fileID: 441813146}
   delayBeforeStart: 0.1
+  cachedItems: []
   requiredDistanceToDropItem: 4
   prisonerObj: {fileID: 796881092}
-  baseGameDuration: 10
+  baseGameDuration: 7
   timePerItem: 10
   timerText: {fileID: 1391125558}
 --- !u!4 &1661679224
@@ -4174,7 +4177,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2053475429396330321, guid: 09657b125fcb544ff803a499d7f3427b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 2053475429396330321, guid: 09657b125fcb544ff803a499d7f3427b, type: 3}
       propertyPath: m_LocalPosition.z
